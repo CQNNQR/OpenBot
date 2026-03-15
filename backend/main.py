@@ -1,8 +1,10 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from .config import settings
+from .model_client import generate_response
+from .router import resolve_model
 
 app = FastAPI(title="OpenBot API", version="0.1.0")
 
@@ -36,19 +38,26 @@ def get_config():
 class ChatRequest(BaseModel):
     messages: list[dict]
     model_preference: str | None = "fast"
+    temperature: float | None = None
+    system_prompt: str | None = None
 
 
 @app.post("/api/chat")
 def chat(req: ChatRequest):
-    # Stubbed response for early development.
-    return {
-        "model_preference": req.model_preference,
-        "response": {
-            "role": "assistant",
-            "content": "This is a stubbed response. Replace with actual model logic.",
-        },
-        "trace": {
-            "model_used": "stub",
-            "duration_ms": 0,
-        },
-    }
+    model_config = resolve_model(req.model_preference or "fast")
+
+    if req.temperature is not None:
+        model_config["temperature"] = req.temperature
+
+    if req.system_prompt:
+        # Place system prompt at the start of the conversation
+        system_msg = {"role": "system", "content": req.system_prompt}
+        messages = [system_msg, *req.messages]
+    else:
+        messages = req.messages
+
+    try:
+        result = generate_response(messages, model_config)
+        return result
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))

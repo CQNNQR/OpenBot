@@ -152,19 +152,20 @@ args:
 - [x] Build the dashboard yourself using React + Tailwind (no AI app-builder shortcuts).
 - [x] Keep it “vibe coding” by iterating quickly in the UI and letting the design evolve.
 - [x] Build UI components:
-  - Sidebar for **Model Configuration** (temperature sliders, model toggles, intent tags).
-  - Main **chat area** (message list + composer).
-  - Real-time **Thought Trace** panel (logs RPCs, model calls, token usage).
-- [x] Build a stubbed backend endpoint that returns canned responses.
+  - Side panel for **Model Configuration** (temperature slider, model selector, system prompt).
+  - Main **chat area** (message list + composer with send-on-Ctrl+Enter and send button).
+  - Real-time **Thought Trace** panel (logs model calls and response metadata).
+  - Clear conversation control and error feedback.
+- [x] Build a backend endpoint that supports model routing and returns real LLM responses.
 
 ### Phase 2: The Router & LiteLLM (The “Brain”)
 **Objective:** Hook the UI to real models with minimal complexity.
-- Add backend:
+- [x] Add backend:
   - FastAPI server.
   - LiteLLM integration for OpenAI/Anthropic.
   - `router.py` for `model_preference` → model config mapping.
-- Connect frontend to backend, send real user messages.
-- Add basic auth/keys management.
+- [x] Connect frontend to backend, send real user messages (via stubbed endpoint transitioning into live model calls).
+- [ ] Add basic auth/keys management (API key validation, rate limits, etc.).
 
 ### Phase 3: Infinite Memory & Context (The “Registry”)
 **Objective:** Surpass LangChain memory management.
