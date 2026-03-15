@@ -14,10 +14,42 @@ Aura is a UI-driven, modular AI orchestration system built to be a flexible alte
 - **Tools**: MCP for connecting the LLM to external capabilities like searches, file access, and terminal actions.
 
 ## 🛠️ Getting Started (Draft)
-1. Clone the repo.
-2. Install dependencies (Python, node, etc.).
-3. Start frontend via Bolt.new / React dev server.
-4. Run the FastAPI backend.
+
+### Backend (FastAPI)
+1. Create a Python venv:
+   ```bash
+   python -m venv .venv
+   source .venv/bin/activate  # macOS/Linux
+   .venv\Scripts\activate    # Windows
+   ```
+2. Install dependencies:
+   ```bash
+   pip install -r backend/requirements.txt
+   ```
+3. Run the backend server:
+   ```bash
+   uvicorn backend.main:app --reload --port 8000
+   ```
+
+### Frontend (React + Vite)
+1. Install dependencies:
+   ```bash
+   cd frontend
+   npm install
+   ```
+2. Run the dev server:
+   ```bash
+   npm run dev
+   ```
+
+### Notes
+- Frontend is configured to proxy `/api` to `http://localhost:8000`.
+- Update `.env` with API keys (OpenAI, Anthropic) and other settings as needed.
+- To push to GitHub, create a repo at https://github.com/CQNNQR/OpenBot and run:
+  ```bash
+  git remote add origin https://github.com/CQNNQR/OpenBot.git
+  git push -u origin main
+  ```
 
 > Note: This repo is a work-in-progress. Follow `roadmap.md` for current priorities.
 

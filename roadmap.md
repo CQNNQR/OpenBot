@@ -142,9 +142,10 @@ args:
 
 ### Phase 0: MVP Scope & Priors (Pre-work)
 **Objective:** Get a minimal end-to-end pipeline working quickly.
-- Define the minimal data flow (frontend → backend → model → response).
-- Decide on initial model targets (OpenAI + one local or Anthropic).
-- Add skeleton folder structure and minimal `README.md` / `roadmap.md`.
+- [x] Define the minimal data flow (frontend → backend → model → response).
+- [x] Decide on initial model targets (OpenAI + one local or Anthropic).
+- [x] Add skeleton folder structure and minimal `README.md` / `roadmap.md`.
+- [ ] Create GitHub repo and push initial scaffold.
 
 ### Phase 1: The Visual Shell (The “Vibe” Setup)
 **Objective:** Ship a UI that feels better than OpenClaw.

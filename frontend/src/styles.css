@@ -52,3 +52,85 @@ body {
   color: rgba(255, 255, 255, 0.7);
   border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
+
+.messages {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-height: 480px;
+  overflow-y: auto;
+  padding-right: 0.25rem;
+}
+
+.bubble {
+  padding: 0.9rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  max-width: 82%;
+  box-shadow: 0 12px 18px rgba(0, 0, 0, 0.25);
+}
+
+.bubble-user {
+  background: rgba(80, 170, 255, 0.12);
+  align-self: flex-end;
+}
+
+.bubble-assistant {
+  background: rgba(110, 140, 255, 0.08);
+  align-self: flex-start;
+}
+
+.role {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.65);
+  margin-bottom: 0.4rem;
+}
+
+.text {
+  line-height: 1.5;
+}
+
+.composer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.composer textarea {
+  width: 100%;
+  resize: vertical;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(0, 0, 0, 0.35);
+  color: white;
+  padding: 0.75rem;
+  font-family: inherit;
+}
+
+.composer-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+button.primary {
+  background: #4f46e5;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+button.primary:hover {
+  background: #3730a3;
+}
+
+.empty {
+  opacity: 0.7;
+  font-style: italic;
+}
