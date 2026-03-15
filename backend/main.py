@@ -46,6 +46,7 @@ class ChatRequest(BaseModel):
     model_preference: str | None = "fast"
     temperature: float | None = None
     system_prompt: str | None = None
+    minimax: bool | None = False
 
 
 @app.post("/api/chat")
@@ -69,12 +70,38 @@ def chat(req: ChatRequest):
 
     messages = req.messages or []
     if context_summary:
-        messages = [{"role": "system", "content": f"Conversation summary: {context_summary}"}, *messages]
+        messages = [
+            {"role": "system", "content": f"Conversation summary: {context_summary}"},
+            *messages,
+        ]
 
     if req.system_prompt:
         messages = [{"role": "system", "content": req.system_prompt}, *messages]
 
     try:
+        if req.minimax:
+            minimax_model_config = resolve_minimax_model(req.model_preference or "fast")
+            primary = generate_response(messages, model_config)
+            secondary = generate_response(messages, minimax_model_config)
+
+            # Persist both assistant responses
+            if primary.get("response") and primary["response"].get("role") == "assistant":
+                save_message("assistant", primary["response"].get("content", ""))
+            if secondary.get("response") and secondary["response"].get("role") == "assistant":
+                save_message("assistant", secondary["response"].get("content", ""))
+
+            return {
+                "minimax": True,
+                "responses": [
+                    {"label": "primary", **primary},
+                    {"label": "secondary", **secondary},
+                ],
+                "trace": {
+                    "context_summary": context_summary,
+                    "primary": primary.get("trace"),
+                    "secondary": secondary.get("trace"),
+                },
+            }
         result = generate_response(messages, model_config)
 
         # Persist assistant response

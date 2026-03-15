@@ -183,6 +183,7 @@ args:
 - Implement tool discovery in `/tools`.
 - Make tool usage visible in the Thought Trace.
 - Add UI toggles to enable/disable tools per conversation.
+- Add advanced workflow features like **Minimax mode** (dual-model validation) for reliability testing.
 
 ---
 

@@ -27,6 +27,7 @@ export default function App() {
   const [modelPreference, setModelPreference] = useState("fast");
   const [temperature, setTemperature] = useState(0.6);
   const [systemPrompt, setSystemPrompt] = useState("");
+  const [minimax, setMinimax] = useState(false);
   const [draft, setDraft] = useState("");
   const [messages, setMessages] = useState([]);
   const [trace, setTrace] = useState(null);
@@ -86,6 +87,7 @@ export default function App() {
           model_preference: modelPreference,
           temperature,
           system_prompt: systemPrompt || undefined,
+          minimax,
         }),
       });
 
@@ -95,7 +97,17 @@ export default function App() {
       }
 
       const data = await resp.json();
-      if (data.response) {
+      if (data.minimax && Array.isArray(data.responses)) {
+        data.responses.forEach((resp) => {
+          if (resp.response) {
+            appendMessage({
+              role: "assistant",
+              content: `[${resp.label}] ${resp.response.content}`,
+            });
+          }
+        });
+        setTrace(data.trace ?? null);
+      } else if (data.response) {
         appendMessage(data.response);
         setTrace(data.trace ?? null);
       }
@@ -240,6 +252,15 @@ export default function App() {
               <div className="temp-label">{temperature.toFixed(2)}</div>
             </label>
 
+            <label className="checkbox">
+              <input
+                type="checkbox"
+                checked={minimax}
+                onChange={(e) => setMinimax(e.target.checked)}
+              />
+              <span>Minimax (dual-call)</span>
+            </label>
+
             <label>
               <span>System prompt</span>
               <input
@@ -247,6 +268,15 @@ export default function App() {
                 onChange={(e) => setSystemPrompt(e.target.value)}
                 placeholder="Optional system prompt (e.g. ‘You are a friendly assistant.’)"
               />
+            </label>
+
+            <label className="checkbox">
+              <input
+                type="checkbox"
+                checked={minimax}
+                onChange={(e) => setMinimax(e.target.checked)}
+              />
+              <span>Minimax mode</span>
             </label>
 
             <label>

@@ -7,8 +7,25 @@ MODEL_MAP: Dict[str, Dict[str, Any]] = {
     "logical": {"provider": "anthropic", "model": "claude-3-opus", "temperature": 0.2},
 }
 
+# For minimax mode, this maps a base preference to a stronger / validation model.
+MINIMAX_MAP: Dict[str, str] = {
+    "fast": "creative",
+    "creative": "logical",
+    "logical": "creative",
+}
+
 
 def resolve_model(preference: str) -> Dict[str, Any]:
     """Resolve a model preference tag to a concrete model configuration."""
 
     return MODEL_MAP.get(preference, MODEL_MAP["fast"])
+
+
+def resolve_minimax_model(preference: str) -> Dict[str, Any]:
+    """Resolve a second model to use for minimax validation.
+
+    Returns a complementary model configuration for the given preference.
+    """
+
+    target = MINIMAX_MAP.get(preference, "creative")
+    return resolve_model(target)
