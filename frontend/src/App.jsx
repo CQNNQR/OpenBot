@@ -25,6 +25,7 @@ export default function App() {
   const [config, setConfig] = useState(null);
   const [status, setStatus] = useState("Loading...");
   const [modelPreference, setModelPreference] = useState("fast");
+  const [primaryAgent, setPrimaryAgent] = useState("openai");
   const [temperature, setTemperature] = useState(0.6);
   const [systemPrompt, setSystemPrompt] = useState("");
   const [minimax, setMinimax] = useState(false);
@@ -53,6 +54,9 @@ export default function App() {
       .then((json) => {
         setConfig(json);
         setStatus("Ready");
+        if (json.agents?.length) {
+          setPrimaryAgent(json.agents[0].tag);
+        }
       })
       .catch((err) => {
         console.error(err);
@@ -85,6 +89,7 @@ export default function App() {
         body: JSON.stringify({
           messages: [...messages, outgoing],
           model_preference: modelPreference,
+          primary_agent: primaryAgent,
           temperature,
           system_prompt: systemPrompt || undefined,
           minimax,
@@ -141,7 +146,19 @@ export default function App() {
         </div>
 
         <div className="header-meta">
-          <div className="label">Model</div>
+          <div className="label">Agent</div>
+          <select
+            value={primaryAgent}
+            onChange={(e) => setPrimaryAgent(e.target.value)}
+          >
+            {config?.agents?.map((a) => (
+              <option key={a.tag} value={a.tag}>
+                {a.label}
+              </option>
+            ))}
+          </select>
+
+          <div className="label">Mode</div>
           <select
             value={modelPreference}
             onChange={(e) => setModelPreference(e.target.value)}
@@ -152,6 +169,7 @@ export default function App() {
               </option>
             ))}
           </select>
+
           <div className="model-tag">{activeModel?.model ?? "loading..."}</div>
         </div>
       </header>
@@ -268,15 +286,6 @@ export default function App() {
                 onChange={(e) => setSystemPrompt(e.target.value)}
                 placeholder="Optional system prompt (e.g. ‘You are a friendly assistant.’)"
               />
-            </label>
-
-            <label className="checkbox">
-              <input
-                type="checkbox"
-                checked={minimax}
-                onChange={(e) => setMinimax(e.target.checked)}
-              />
-              <span>Minimax mode</span>
             </label>
 
             <label>

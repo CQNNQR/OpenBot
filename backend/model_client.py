@@ -13,6 +13,10 @@ def _get_anthropic_client(api_key: str, model: str):
     return litellm.Anthropic(model=model, api_key=api_key)
 
 
+def _get_minimax_client(api_key: str, model: str):
+    return litellm.Minimax(model=model, api_key=api_key)
+
+
 def generate_response(messages: List[Dict[str, Any]], model_config: Dict[str, Any]) -> Dict[str, Any]:
     """Generate a response from a configured model.
 
@@ -39,6 +43,12 @@ def generate_response(messages: List[Dict[str, Any]], model_config: Dict[str, An
         if not api_key:
             raise RuntimeError("ANTHROPIC_API_KEY is not set")
         client = _get_anthropic_client(api_key, model)
+        call_method = client.chat_completion
+    elif provider == "minimax":
+        api_key = os.getenv("MINIMAX_API_KEY")
+        if not api_key:
+            raise RuntimeError("MINIMAX_API_KEY is not set")
+        client = _get_minimax_client(api_key, model)
         call_method = client.chat_completion
     else:
         raise ValueError(f"Unknown provider: {provider}")

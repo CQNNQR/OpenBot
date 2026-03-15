@@ -1,3 +1,5 @@
+import os
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -31,19 +33,29 @@ def healthz():
 
 @app.get("/api/config")
 def get_config():
+    agents = []
+    if os.getenv("OPENAI_API_KEY"):
+        agents.append({"tag": "openai", "label": "OpenAI"})
+    if os.getenv("ANTHROPIC_API_KEY"):
+        agents.append({"tag": "anthropic", "label": "Anthropic"})
+    if os.getenv("MINIMAX_API_KEY"):
+        agents.append({"tag": "minimax", "label": "Minimax 2.5"})
+
     return {
         "env": settings.ENV,
         "models": [
-            {"tag": "fast", "label": "GPT-4o-mini (fast)", "default_temperature": 0.6},
-            {"tag": "creative", "label": "GPT-4o (creative)", "default_temperature": 0.9},
-            {"tag": "logical", "label": "Claude-3-Opus (logical)", "default_temperature": 0.2},
+            {"tag": "fast", "label": "Fast", "default_temperature": 0.6},
+            {"tag": "creative", "label": "Creative", "default_temperature": 0.9},
+            {"tag": "logical", "label": "Logical", "default_temperature": 0.2},
         ],
+        "agents": agents,
     }
 
 
 class ChatRequest(BaseModel):
     messages: list[dict]
     model_preference: str | None = "fast"
+    primary_agent: str | None = None
     temperature: float | None = None
     system_prompt: str | None = None
     minimax: bool | None = False
@@ -51,7 +63,7 @@ class ChatRequest(BaseModel):
 
 @app.post("/api/chat")
 def chat(req: ChatRequest):
-    model_config = resolve_model(req.model_preference or "fast")
+    model_config = resolve_model(req.model_preference or "fast", agent=req.primary_agent)
 
     if req.temperature is not None:
         model_config["temperature"] = req.temperature
