@@ -170,11 +170,12 @@ args:
 ### Phase 3: Infinite Memory & Context (The “Registry”)
 **Objective:** Surpass LangChain memory management.
 - Add a memory layer:
-  - SQLite (or Supabase) storing message history & personas.
-  - Context Window Manager to summarize last N messages.
+  - SQLite storing message history.
+  - Context Window Manager to summarize last N messages and prepend the summary.
 - Add UI controls for memory:
   - “Reset conversation” button.
   - “View full history” toggle.
+- Implement a summarization helper that uses the same model to create a short "Current State".
 
 ### Phase 4: Skills & MCP (The “Claws”)
 **Objective:** Give Aura the ability to do things.

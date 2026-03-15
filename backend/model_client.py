@@ -17,7 +17,7 @@ def generate_response(messages: List[Dict[str, Any]], model_config: Dict[str, An
     """Generate a response from a configured model.
 
     Args:
-        messages: List of messages in the format [{"role": "user"|"assistant", "content": "..."}].
+        messages: List of messages in the format [{"role": "user"|"assistant"|"system", "content": "..."}].
         model_config: Dict with keys: provider, model, temperature.
 
     Returns:
@@ -82,3 +82,30 @@ def generate_response(messages: List[Dict[str, Any]], model_config: Dict[str, An
             "last_user": messages[-1]["content"] if messages and messages[-1].get("role") == "user" else None,
         },
     }
+
+
+def summarize_messages(messages: List[Dict[str, Any]], model_config: Dict[str, Any]) -> str:
+    """Produce a short summary of a conversation.
+
+    This is used to create a compact "current state" to help the model retain context.
+    """
+
+    if not messages:
+        return ""
+
+    prompt = (
+        "Summarize the key points of the following conversation in 2-3 sentences. "
+        "Focus on user intent and any instructions that should be remembered.\n\n"
+    )
+
+    conversation_text = "\n".join(
+        f"[{m['role']}] {m['content']}" for m in messages[-20:]
+    )
+
+    summary_messages = [
+        {"role": "system", "content": prompt},
+        {"role": "user", "content": conversation_text},
+    ]
+
+    result = generate_response(summary_messages, model_config)
+    return result["response"]["content"]

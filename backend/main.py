@@ -3,10 +3,16 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from .config import settings
-from .model_client import generate_response
+from .model_client import generate_response, summarize_messages
 from .router import resolve_model
+from .storage import clear_messages, get_last_messages, init_db, save_message
 
 app = FastAPI(title="OpenBot API", version="0.1.0")
+
+
+@app.on_event("startup")
+def startup():
+    init_db()
 
 # Allow local frontend dev server to talk to the backend.
 app.add_middleware(
@@ -49,15 +55,36 @@ def chat(req: ChatRequest):
     if req.temperature is not None:
         model_config["temperature"] = req.temperature
 
+    # Persist user message
+    if req.messages:
+        last_user = req.messages[-1]
+        if last_user.get("role") == "user":
+            save_message("user", last_user.get("content", ""))
+
+    # Build context with summary if needed
+    history = get_last_messages(20)
+    context_summary = None
+    if len(history) > 10:
+        context_summary = summarize_messages(history, model_config)
+
+    messages = req.messages or []
+    if context_summary:
+        messages = [{"role": "system", "content": f"Conversation summary: {context_summary}"}, *messages]
+
     if req.system_prompt:
-        # Place system prompt at the start of the conversation
-        system_msg = {"role": "system", "content": req.system_prompt}
-        messages = [system_msg, *req.messages]
-    else:
-        messages = req.messages
+        messages = [{"role": "system", "content": req.system_prompt}, *messages]
 
     try:
         result = generate_response(messages, model_config)
+
+        # Persist assistant response
+        if result.get("response") and result["response"].get("role") == "assistant":
+            save_message("assistant", result["response"].get("content", ""))
+
+        # Include context summary in trace for debugging
+        if context_summary:
+            result["trace"]["context_summary"] = context_summary
+
         return result
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc))
