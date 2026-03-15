@@ -15,12 +15,12 @@
 ### Recommended Local Setup
 1. Clone the repo.
 2. Create a Python virtual environment (`python -m venv .venv`).
-3. Install backend dependencies (`pip install -r requirements.txt`).
+3. Install backend dependencies (`pip install -r backend/requirements.txt`).
 4. Install frontend dependencies (`cd frontend && npm install`).
-5. Create a `.env` file with required variables (see **Configuration** below).
-6. Run backend (`uvicorn backend.main:app --reload`) and frontend (`npm run dev`).
+5. Copy `.env.example` to `.env` and fill in required variables.
+6. Run backend (`uvicorn backend.main:app --reload --port 8000`) and frontend (`npm run dev`).
 
-> Note: If `requirements.txt` / `frontend` folders don’t exist yet, the roadmap assumes they will be added during Phase 1/2. Use this as a TODO checklist.
+> Note: The backend uses `pydantic-settings` for configuration. If you see an import error related to `BaseSettings`, make sure `pip install -r backend/requirements.txt` is up to date.
 
 ---
 
@@ -149,13 +149,13 @@ args:
 
 ### Phase 1: The Visual Shell (The “Vibe” Setup)
 **Objective:** Ship a UI that feels better than OpenClaw.
-- Build the dashboard yourself using React + Tailwind (no AI app-builder shortcuts).
-- Keep it “vibe coding” by iterating quickly in the UI and letting the design evolve.
-- Build UI components:
+- [x] Build the dashboard yourself using React + Tailwind (no AI app-builder shortcuts).
+- [x] Keep it “vibe coding” by iterating quickly in the UI and letting the design evolve.
+- [x] Build UI components:
   - Sidebar for **Model Configuration** (temperature sliders, model toggles, intent tags).
   - Main **chat area** (message list + composer).
   - Real-time **Thought Trace** panel (logs RPCs, model calls, token usage).
-- Build a stubbed backend endpoint that returns canned responses.
+- [x] Build a stubbed backend endpoint that returns canned responses.
 
 ### Phase 2: The Router & LiteLLM (The “Brain”)
 **Objective:** Hook the UI to real models with minimal complexity.

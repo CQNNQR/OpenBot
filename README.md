@@ -44,7 +44,7 @@ Aura is a UI-driven, modular AI orchestration system built to be a flexible alte
 
 ### Notes
 - Frontend is configured to proxy `/api` to `http://localhost:8000`.
-- Update `.env` with API keys (OpenAI, Anthropic) and other settings as needed.
+- Copy `.env.example` to `.env` and set API keys (OpenAI, Anthropic) and other settings as needed.
 - To push to GitHub, create a repo at https://github.com/CQNNQR/OpenBot and run:
   ```bash
   git remote add origin https://github.com/CQNNQR/OpenBot.git

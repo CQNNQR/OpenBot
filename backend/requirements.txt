@@ -1,6 +1,6 @@
 fastapi
 uvicorn[standard]
 python-dotenv
-pydantic
+pydantic-settings
 # LiteLLM is optional; add it when ready
 # litellm
